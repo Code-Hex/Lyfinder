@@ -8,7 +8,7 @@ use utf8;
 use Encode;
 use YAML;
 
-### Now Version 0.2
+### Now Version 0.3
 #一応 『歌詞の保存、印刷、引用、
 #コピー&ペーストは著作権保護の観点から禁止しています。』
 #ってのがけっこうある。
@@ -17,7 +17,9 @@ use YAML;
 
 my $uri = new URI(@ARGV);
 if ($ARGV[0] eq 0) {
-		print "Lyfinder [http://mojim.com/twy...x...x...htm]\n"
+		print "Lyfinder [http://mojim.com/twy...x...x...htm]\n";
+		print "or\n";
+		print "Lyfinder [http://mojim.com/jpy...x...x...htm]\n";
 	} elsif ($ARGV[0]=~ m(mojim\.com/twy)) {
 my $scraper = scraper {
 		process '#fsZ dl', 'Lyrics[]' => 'TEXT';
@@ -28,8 +30,20 @@ my $text = $scraper->scrape($uri);
 		print "\n", Encode::encode('utf8', YAML::Dump($_));
 		    } 
 		print "-------------Dump complete-------------\n";
+	 } elsif ($ARGV[0]=~ m(mojim\.com/jpy)) {
+my $scraper = scraper {
+		process '#fsZ dl', 'Lyrics[]' => 'TEXT';
+	};	
+my $text = $scraper->scrape($uri);
+	for (@{$text->{Lyrics}}) {
+	$_ =~ s/(もっと沢山の歌詞は|※ Mojim.com)//g;
+		print "\n", Encode::encode('utf8', YAML::Dump($_));
+		    } 
+		print "-------------Dump complete-------------\n";
 	 } else {
 		    print "Not mojim.com lyrics..."."\n";
-		    print "Lyfinder [http://mojim.com/twy...x...x...htm]\n"
+		    print "Lyfinder [http://mojim.com/twy...x...x...htm]\n";
+		    print "or\n";
+		    print "Lyfinder [http://mojim.com/jpy...x...x...htm]\n";
     	}
     exit;
